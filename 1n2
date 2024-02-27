@@ -252,3 +252,305 @@ class_averages_listbox = tk.Listbox(right_frame, height=15, width=25, font=carto
 class_averages_listbox.grid(row=5, column=0, padx=5, pady=5)
 
 root.mainloop()
+
+=====================================================================
+3. 
+
+
+import tkinter as tk
+
+
+def encryption():
+    plaintext = input.get()
+    ciphertext = ""
+    for char in plaintext:
+        if char.isalpha():
+            ascii_offset = ord('a') if char.islower() else ord('A')
+            ciphertext += chr((ord(char) - ascii_offset + 1) % 26 + ascii_offset)
+        else:
+            ciphertext += char
+    output.config(state=tk.NORMAL)
+    output.delete(1.0, tk.END)
+    output.insert(tk.END, ciphertext)
+    output.config(state=tk.DISABLED)
+
+
+root = tk.Tk()
+root.configure(bg='gold')
+root.title("Group 3's Encryption Tool")
+
+# Create header
+header = tk.Label(root, text="Encryption Tool", fg='#212121', bg='gold', font=('Fixedsys', 40))
+header.pack()
+
+# Create separator line
+separator = tk.Frame(root, height=2, bg='#212121')
+separator.pack(fill=tk.X, pady=5)
+
+# Create labels and entry widget
+label1 = tk.Label(root, text="Input text:", fg='#212121', bg='#F2F2F2', font=('FixedSys', 20))
+label1.pack()
+
+input = tk.Entry(root, width=50, borderwidth=3, fg='#212121', bg='#F2F2F2', font=('FixedSys', 20))
+input.pack(padx=10, pady=10)
+
+# Create button and output widget
+button = tk.Button(root, text="Encrypt", borderwidth=5, command=encryption, fg='#212121', bg='#F2F2F2',
+                   font=['FixedSys', 25])
+button.pack(padx=10, pady=10)
+
+label2 = tk.Label(root, text="Ciphered input:", fg='#212121', bg='#F2F2F2', font=('FixedSys', 20))
+label2.pack()
+
+output = tk.Text(root, height=10, width=50, borderwidth=5, state=tk.DISABLED, fg='#212121', bg='#F2F2F2',
+                 font=['FixedSys', 20])
+output.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+root.mainloop()
+
+=====================================================================
+
+4.
+
+import tkinter as tk
+from tkinter import messagebox, simpledialog
+from tkinter import ttk
+
+class InventoryGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Inventory Management")
+        self.root.geometry("400x300")  # Set initial window size
+
+        self.style = ttk.Style()
+        self.style.configure("Custom.TButton", font=("Helvetica", 12), background="#007bff", foreground="black", bordercolor="#007bff", highlightthickness=0)
+        self.style.map("Custom.TButton", background=[("active", "#0056b3"), ("disabled", "#bfbfbf")])  # Hover color, Disabled color
+        self.style.map("Custom.TButton", foreground=[("disabled", "#595959")])  # Disabled text color
+        self.style.configure("Custom.TFrame", background="#cdf2ff")  # Custom background color
+
+        self.inventory = {
+            "motherboard": 0,
+            "hard_disk": 0,
+            "diskette": 0,
+            "compact_disk": 0,
+            "memory_card": 0
+        }
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Main frame with custom background
+        main_frame = ttk.Frame(self.root, style="Custom.TFrame")
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Title
+        self.title_label = tk.Label(main_frame, text="Inventory Management", font=("Helvetica", 16, "bold"),bg="#cdf2ff")
+        self.title_label.pack(pady=10)
+
+        # Display Inventory button
+        self.display_button = ttk.Button(main_frame, text="Display Inventory", command=self.display_inventory, style="Custom.TButton")
+        self.display_button.pack(pady=5)
+
+        # Add Items button
+        self.add_button = ttk.Button(main_frame, text="Add Items", command=self.add_items, style="Custom.TButton")
+        self.add_button.pack(pady=5)
+
+        # Remove Items button
+        self.remove_button = ttk.Button(main_frame, text="Remove Items", command=self.remove_items, style="Custom.TButton")
+        self.remove_button.pack(pady=5)
+
+        # Quit button
+        self.quit_button = ttk.Button(main_frame, text="Quit", command=self.root.destroy, style="Custom.TButton")
+        self.quit_button.pack(pady=5)
+
+    def display_inventory(self):
+        inventory_text = "Current Inventory:\n"
+        for item, quantity in self.inventory.items():
+            inventory_text += f"{item.capitalize()}: {quantity}\n"
+
+        # Create a custom-styled messagebox
+        inventory_window = tk.Toplevel(self.root)
+        inventory_window.title("Current Inventory")
+        inventory_window.geometry("300x200")
+        inventory_window.configure(bg="#cdf2ff")  # Set background color
+
+        # Create a label to display inventory text
+        inventory_label = tk.Label(inventory_window, text=inventory_text, font=("Helvetica", 12), bg="#cdf2ff")
+        inventory_label.pack(padx=20, pady=20)
+
+    def add_items(self):
+        item = simpledialog.askstring("Add Items", "Enter item to add:")
+        if item:
+            item = item.lower()
+            if item in self.inventory:
+                quantity = simpledialog.askinteger("Add Items", "Enter quantity to add:")
+                if quantity is not None and quantity > 0:
+                    self.inventory[item] += quantity
+                    self.root.lift()  # Bring the main window to the front
+                    messagebox.showinfo("Success", f"Added {quantity} {item.capitalize()}(s) to inventory.")
+                else:
+                    self.root.lift()  # Bring the main window to the front
+                    messagebox.showerror("Error", "Invalid quantity.")
+            else:
+                self.root.lift()  # Bring the main window to the front
+                messagebox.showerror("Error", "Invalid item.")
+
+    def remove_items(self):
+        item = simpledialog.askstring("Remove Items", "Enter item to remove:")
+        if item:
+            item = item.lower()
+            if item in self.inventory:
+                quantity = simpledialog.askinteger("Remove Items", "Enter quantity to remove:")
+                if quantity is not None and quantity > 0:
+                    if self.inventory[item] >= quantity:
+                        self.inventory[item] -= quantity
+                        self.root.lift()  # Bring the main window to the front
+                        messagebox.showinfo("Success", f"Removed {quantity} {item.capitalize()}(s) from inventory.")
+                    else:
+                        self.root.lift()  # Bring the main window to the front
+                        messagebox.showerror("Error", "Insufficient quantity in inventory.")
+                else:
+                    self.root.lift()  # Bring the main window to the front
+                    messagebox.showerror("Error", "Invalid quantity.")
+            else:
+                self.root.lift()  # Bring the main window to the front
+                messagebox.showerror("Error", "Invalid item.")
+
+def main():
+    root = tk.Tk()
+    app = InventoryGUI(root)
+    root.mainloop()
+
+if _name_ == "_main_":
+    main()
+=====================================================================
+5.
+
+import tkinter as tk
+from tkinter import messagebox
+
+def AddContact():
+    name = NameEntry.get()
+    phone = PhoneEntry.get()
+    if name and phone:
+        if phone.isdigit():
+            if any(contact_phone == phone for contact_phone in contacts.values()):
+                messagebox.showerror("ERROR", "The phone number you entered already exists.")
+            else:
+                contacts[name] = phone
+                UpdateDisplay()
+        else:
+            messagebox.showerror("ERROR", "Phone number must contain only digits.")
+    else:
+        messagebox.showerror("ERROR", "Please enter both name and phone number.")
+
+def SearchContact():
+    search_term = SearchEntry.get()
+    if search_term in contacts:
+        ResultLabel.config(text=f"Name: {search_term}, Phone Number: {contacts[search_term]}")
+    else:
+        ResultLabel.config(text="Contact cannot be found")
+
+def DeleteContact():
+    name = NameEntry.get()
+    phone = PhoneEntry.get()
+    if name and phone:
+        if (name, phone) in contacts.items():
+            confirm = messagebox.askyesno("Confirm for Deletion", f"Are you sure you want to delete {name}?")
+            if confirm:
+                del contacts[name]
+                UpdateDisplay()
+        else:
+            messagebox.showerror("ERROR", "Contact cannot be found")
+    else:
+        messagebox.showerror("ERROR", "Please enter both name and phone number.")
+
+def UpdateContact():
+    name = NameEntry.get()
+    new_name = new_NameEntry.get()
+    new_phone = new_PhoneEntry.get()
+
+    if name not in contacts:
+        messagebox.showerror("ERROR", "Contact cannot be found.")
+        return
+
+    while True:
+        if not new_name and not new_phone:
+            messagebox.showerror("ERROR", "Please enter new name or new phone number.")
+            break
+
+        if new_phone and not new_phone.isdigit():
+            messagebox.showerror("ERROR", "New phone number must contain only digits.")
+            break
+
+        if any(new_phone == phone for phone in contacts.values()):
+            messagebox.showerror("ERROR", "The phone number you inserted already exists in the phonebook.")
+            break
+
+        if new_name:
+            contacts[new_name] = contacts.pop(name)
+        if new_phone:
+            contacts[new_name] = new_phone
+
+        UpdateDisplay()
+        messagebox.showinfo("SUCCESS", "Contact updated successfully.")
+        break
+
+def UpdateDisplay():
+    contactListBox.delete(0, tk.END)
+    for name, phone in contacts.items():
+        contactListBox.insert(tk.END, f"{name}: {phone}")
+
+contacts = {}
+
+root = tk.Tk()
+root.title("Group 3's Phonebook")
+root.geometry("400x300")
+
+cool_font = ("Verdana", 10, "bold")
+header_font = ("Fixedsys", 20, "bold")
+result_font = ("Verdana", 10)
+
+root.config(bg="skyblue")
+
+HeaderLabel = tk.Label(root, text="GROUP 3'S PHONEBOOK", font=header_font, bg="skyblue", fg="black")
+HeaderLabel.grid(row=0, column=0, columnspan=4, pady=10)
+
+SearchEntry = tk.Entry(root, width=29, font=cool_font)
+SearchEntry.grid(row=1, column=1, pady=5, sticky="w")
+SearchButton = tk.Button(root, text="Search", command=SearchContact, font=cool_font)
+SearchButton.grid(row=1, column=2)
+tk.Label(root, text="Name:", font=cool_font, bg="skyblue", fg="black").grid(row=3, column=0, sticky="e")
+tk.Label(root, text="Phone Number:", font=cool_font, bg="skyblue", fg="black").grid(row=4, column=0, sticky="e")
+tk.Label(root, text="Search:", font=cool_font, bg="skyblue", fg="black").grid(row=1, column=0, sticky="e")
+ResultLabel = tk.Label(root, text="", font=result_font, bg="skyblue", fg="black")
+ResultLabel.grid(row=2, columnspan=4)
+
+NameEntry = tk.Entry(root, width=30, font=cool_font)
+NameEntry.grid(row=3, column=1)
+PhoneEntry = tk.Entry(root, width=30, font=cool_font)
+PhoneEntry.grid(row=4, column=1)
+PhoneEntry.config(validate="key")
+PhoneEntry.config(validatecommand=(root.register(lambda char: char.isdigit() or char == ''), '%S'))
+
+AddButton = tk.Button(root, text="Add Contact", command=AddContact, font=cool_font)
+AddButton.grid(row=5, column=1, pady=5, sticky="w", padx=5)
+DeleteButton = tk.Button(root, text="Delete Contact", command=DeleteContact, font=cool_font)
+DeleteButton.grid(row=5, column=1, pady=5, padx=5, sticky="e")
+
+tk.Label(root, text="New Name:", font=cool_font, bg="skyblue", fg="black").grid(row=6, column=0, sticky="e")
+tk.Label(root, text="New Phone Number:", font=cool_font, bg="skyblue", fg="black").grid(row=7, column=0, sticky="e")
+new_NameEntry = tk.Entry(root, width=30, font=cool_font)
+new_NameEntry.grid(row=6, column=1, sticky="w")
+new_PhoneEntry = tk.Entry(root, width=30, font=cool_font)
+new_PhoneEntry.grid(row=7, column=1, sticky="w")
+
+UpdateButton = tk.Button(root, text="Update Contact", command=UpdateContact, font=cool_font)
+UpdateButton.grid(row=8, column=1, columnspan=1, pady=5)
+
+contactListBox = tk.Listbox(root, width=40, height=8, font=cool_font)
+contactListBox.grid(row=9, columnspan=5, pady=5)
+
+root.mainloop()
+
+
